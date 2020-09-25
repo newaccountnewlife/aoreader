@@ -2,14 +2,15 @@
 
 # read the official server from the terminal
 # shitty
-# you will eventually be thrown out
+# you will eventually be thrown out, likely
 # not a full client
 #
 # TODO:
-# properly handshake
+# properly handshake (done)
 # pick a character thats not taken
 # use a socket rather than nc
 # clean up
+# use variables
 # 
 # 0.1 
 
