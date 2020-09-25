@@ -15,7 +15,7 @@
 
 
 
-nc 104.131.93.82 27017 <<<"HI#$(cat/dev/random | tr -dc 'a-f0-9' | fold -w 30)#%ID#aoreader#0.1#%RD#%" >>./ao-nh-chat &
+nc 104.131.93.82 27017 <<<'HI#'"$(cat/dev/random | tr -dc 'a-f0-9' | fold -w 30)"'#%ID#aoreader#0.1#%RD#%' >>./ao-nh-chat &
 pi=""
 
 while :;do
