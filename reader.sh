@@ -88,6 +88,7 @@ while :;do
     aaa
     while read -rd'%' -n 2048 -t10 packet ;do
         handlepacket "${packet}"
+        periodically && CL_packet_CH 
     done <&3
 
     output 'Lost connection to the server. Reconnecting in 5 seconds.'
