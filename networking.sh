@@ -13,7 +13,7 @@ CL_debugpacket() { output '~>'"$(awk -F# '{print $1}' <<<"$1")"; }
 
 sendpacket() {
     CL_debugpacket "$1"
-    echo "$1" >&3 || die "Oops. Couldn't send Packet."; }
+    echo -n "$1" >&3 || die "Oops. Couldn't send Packet."; }
 
 handlepacket() {
     # properly matching case is not consistent across bash versions afaik.
