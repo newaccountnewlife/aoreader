@@ -64,6 +64,7 @@ hdid="abcdef"
 
 CL_packet_HI "${hdid}" &&
 CL_packet_ID "${clientname}" "${clientversion}" &&
+CL_packet_RD
 output 'Handshake sent.'
 }
 
