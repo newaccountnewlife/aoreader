@@ -17,7 +17,7 @@ rng() {
 	cat /dev/urandom | tr -dc 'a-f0-9' | fold -w "$1"
 }
 periodically() {
-	[[ "$(bc <<<"$(date +%s)"' % 10')" == "0" ]] ||
+	[[ "$(bc <<<"$(date +%s)"' % 5')" == "0" ]] ||
 	return 1
 	
 }

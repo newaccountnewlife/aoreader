@@ -1,6 +1,10 @@
 #!/bin/bash
 
+# sources
 . ./variables.sh
+. ./system.sh
+. ./networking.sh
+. ./packets.sh
 
 # use AO from the terminal
 # shitty
@@ -8,17 +12,23 @@
 # not a full client yet
 #
 # TODO:
-# pick a character thats not taken
-# clean up
-# make it a full client
-# make everything a function
-# implement all packets
+# fix the weird output bug (CASEA, CT)
+# support MS properly
 # implement master server
 # store the "hdid" in a file
+# clean up
+# show showname correctly
+# support colors
+# show shouts
+# implement all packets
+# make it a full client
+# 
 # 
 # 
 # 
 # DONE:
+# make everything a function
+# pick a character thats not taken
 # use a socket rather than nc
 # properly handshake
 # use variables
@@ -77,11 +87,6 @@
 # 
 # etc. pp.
 
-. ./system.sh
-
-. ./networking.sh
-
-. ./packets.sh
 
 
 while :;do
