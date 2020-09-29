@@ -3,9 +3,12 @@
 clientname="aoreader"
 clientversion="0.2"
 
-server="104.131.93.82"
-port="27017"
+server="scatterflower.xyz"
+port="27016"
 
 charid="-1"
 
 initialtime="$(date +%s)"
+
+canstart="0"
+isdone="0"

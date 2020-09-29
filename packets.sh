@@ -15,11 +15,11 @@ SV_packet_SC() { output 'Characters available: '"$(tr '#' ', ' <<<"$1" | tr -d '
 
 SV_packet_SM() { output 'Available Music: '"$(tr '#' ', ' <<<"$1")"; }
 
-SV_packet_DONE() { output 'Server Done.'; }
+SV_packet_DONE() { output 'Server Done.'; isdone="1"}
 
 SV_packet_CHECK() { output 'The connection is still alive.'; }
 
-SV_packet_PV() { charid="$(awk -F# '{print $4}' <<<"$1")"
+SV_packet_PV() { export charid="$(awk -F# '{print $4}' <<<"$1")"
                  output 'Server changed your character to '"$charid"; }
 
 
@@ -36,6 +36,7 @@ SV_packet_KB() { output 'You have been banned from the server. Reason:'"$(awk -F
 
 SV_packet_BD() { output 'You are banned from the server and cannot join. Reason:'"$(awk -F# '{print $2}' <<<"$1")"; handleban; }
 
+SV_packet_DECR() { canstart="1"; }
 SV_packet_XX() { return; }
 
 # outgoing
@@ -62,4 +63,5 @@ CL_packet_ID() { sendpacket 'ID#'"$1"'#'"$2"'#%'; }
 CL_packet_ZZ() { sendpacket 'ZZ#'"$1"'#%'; }
 
 # placeholder
+CL_packet_NULL() { sendpacket '\0#%'; }
 CL_packet_XX() { return; }

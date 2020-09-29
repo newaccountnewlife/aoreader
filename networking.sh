@@ -13,7 +13,7 @@ CL_debugpacket() { output '~>'"$(awk -F# '{print $1}' <<<"$1")"; }
 
 sendpacket() {
     CL_debugpacket "$1"
-    echo -n "$1" >&3 || die "Oops. Couldn't send Packet."; }
+    echo -en "$1" >&3 || die "Oops. Couldn't send Packet."; }
 
 handlepacket() {
     # properly matching case is not consistent across bash versions afaik.
@@ -46,8 +46,11 @@ handlepacket() {
          SV_packet_MS "$1"
 
     elif grep -q -E '^KK' <<<"$1"; then
-         SV_packet_XX "$1"
+         SV_packet_KK "$1"
 
+    elif grep -q -E '^decryptor' <<<"$1"; then
+         SV_packet_DECR "$1"
+         
     elif grep -q -E '^XX' <<<"$1"; then
          SV_packet_XX "$1"
          
@@ -86,4 +89,11 @@ findagoodcharacterautomagically() {
 handleban() {
     hdid="$(rng ${randomhdidlength})"
     output="New HDID set."
+}
+handledisconnect() {
+    output 'Lost connection to the server. Reconnecting in 5 seconds.'
+    sleep 5
+    charid="-1"
+    canstart="0"
+    isdone="0"
 }

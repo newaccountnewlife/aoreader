@@ -87,7 +87,7 @@
 # 
 # etc. pp.
 
-
+# trap "CL_packet_NULL" INT
 
 while :;do
     aaa
@@ -96,6 +96,5 @@ while :;do
         periodically && CL_packet_CH 
     done <&3
 
-    output 'Lost connection to the server. Reconnecting in 5 seconds.'
-    sleep 5
+    handledisconnect
 done
