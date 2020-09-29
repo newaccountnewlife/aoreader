@@ -90,11 +90,13 @@
 # trap "CL_packet_NULL" INT
 
 while :;do
-    aaa
-    while read -rd'%' -n 2048 -t10 packet ;do
-        handlepacket "${packet}"
-        periodically && CL_packet_CH 
+    bbb
+    handlehandshake
+    output what\ how
+    while read -rd'%' -n 4096 packet ;do
+        output "${packet}" "$(getpackettype "${packet}")"
+        handlepacket
+        periodically && CL_packet_CH
     done <&3
-
     handledisconnect
 done

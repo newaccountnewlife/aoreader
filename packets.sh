@@ -3,7 +3,7 @@
 # packet functions
 
 # incoming
-# none of these take args
+# none of these take args except the packet itself
 
 # PN: outputs the player counts
 SV_packet_PN() { output 'Players/Max: '"$(awk -F# '{print $2"/"$3}' <<<"$1")"; }
@@ -15,7 +15,7 @@ SV_packet_SC() { output 'Characters available: '"$(tr '#' ', ' <<<"$1" | tr -d '
 
 SV_packet_SM() { output 'Available Music: '"$(tr '#' ', ' <<<"$1")"; }
 
-SV_packet_DONE() { output 'Server Done.'; isdone="1"}
+SV_packet_DONE() { output 'Server Done.'; isdone="1"; }
 
 SV_packet_CHECK() { output 'The connection is still alive.'; }
 
@@ -36,7 +36,7 @@ SV_packet_KB() { output 'You have been banned from the server. Reason:'"$(awk -F
 
 SV_packet_BD() { output 'You are banned from the server and cannot join. Reason:'"$(awk -F# '{print $2}' <<<"$1")"; handleban; }
 
-SV_packet_DECR() { canstart="1"; }
+SV_packet_decryptor() { canstart="1"; }
 SV_packet_XX() { return; }
 
 # outgoing
@@ -45,10 +45,12 @@ SV_packet_XX() { return; }
 CL_packet_CC() { sendpacket 'CC#0#'"$1"'#abcdef#%'
 	             charid="$1"; }
 
-# CH, RC, RD: no args
+# CH, RC, RD, askchaa: no args
 CL_packet_CH() { sendpacket 'CH#'"${charid}"'#%'; }
 CL_packet_RC() { sendpacket 'RC#%'; }
 CL_packet_RD() { sendpacket 'RD#%'; }
+CL_packet_RM() { sendpacket 'RM#%'; }
+CL_packet_askchaa() { sendpacket 'askchaa#%'; }
 
 # MC: <string trackname> <string showname>
 CL_packet_MC() { sendpacket 'MC#'"$1"'#'"${charid}"'#'"$2"'#%'; }
@@ -64,4 +66,6 @@ CL_packet_ZZ() { sendpacket 'ZZ#'"$1"'#%'; }
 
 # placeholder
 CL_packet_NULL() { sendpacket '\0#%'; }
+CL_packet_LF() { sendpacket '\n#%'; }
+
 CL_packet_XX() { return; }

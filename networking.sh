@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 
 aaa() {
-    output "Connecting..."
-    connect &>/dev/null || die "The connection to the server could not be established. Please check your network and the IP and port of the server."
     output "Shaking hands..."
     handshake
 }
 
-SV_debugpacket() { output '<~'"$(awk -F# '{print $1}' <<<"$1")"; }
+bbb() {
+    output "Connecting..."
+    connect &>/dev/null || die "The connection to the server could not be established. Please check your network and the IP and port of the server."	
+}
 
-CL_debugpacket() { output '~>'"$(awk -F# '{print $1}' <<<"$1")"; }
+SV_debugpacket() { output '<~'"$(getpackettype "$1")"; }
+
+CL_debugpacket() { output '~>'"$(getpackettype "$1")"; }
 
 sendpacket() {
     CL_debugpacket "$1"
@@ -17,58 +20,74 @@ sendpacket() {
 
 handlepacket() {
     # properly matching case is not consistent across bash versions afaik.
+    packet1="$1"
+    SV_debugpacket "${packet1}"
     
-    SV_debugpacket "${packet}"
-    
-      if grep -q -E '^PN' <<<"$1"; then
-         SV_packet_PN "$1"
-
-    elif grep -q -E '^FL' <<<"$1"; then
-         SV_packet_FL "$1"
-
-    elif grep -q -E '^SC' <<<"$1"; then
-         SV_packet_SC "$1"
- 
-    elif grep -q -E '^SM' <<<"$1"; then
-         SV_packet_SM "$1"
-
-    elif grep -q -E '^DONE' <<<"$1"; then
-         SV_packet_DONE "$1"
-         
-
-    elif grep -q -E '^CHECK' <<<"$1"; then
-         SV_packet_CHECK
-
-    elif grep -q -E '^CharsCheck' <<<"$1"; then
-         SV_packet_CharsCheck "$1"
-
-    elif grep -q -E '^MS' <<<"$1"; then
-         SV_packet_MS "$1"
-
-    elif grep -q -E '^KK' <<<"$1"; then
-         SV_packet_KK "$1"
-
-    elif grep -q -E '^decryptor' <<<"$1"; then
-         SV_packet_DECR "$1"
-         
-    elif grep -q -E '^XX' <<<"$1"; then
-         SV_packet_XX "$1"
-         
-    else return 1
-    fi
+    SV_packets=( 'BD' 'CharsCheck' 'CHECK' 'CT' 
+                 'decryptor' 'DONE' 'FL' 'KB' 'KK' 'MS' 
+                 'PN' 'PV' 'SC' 'SM' 'XX' )
+		   
+	for packet_type in "${SV_packets[@]}";do
+        grep -qE '^'"${packet_type}"'' <<<"${packet1}" && SV_packet_"${packet_type}" "${packet1}" && return 0
+	done
+	    
+    return 1
 }
 
 
-handshake() {
-randomhdidlength="30"
 
-# hdid="$(rng ${randomhdidlength})"
-hdid="abcdef"
+getpackettype() {
+	awk -F'#' '{print $1}' <<<"$@"
+}
 
-CL_packet_HI "${hdid}" &&
-CL_packet_ID "${clientname}" "${clientversion}" &&
-CL_packet_RD
-output 'Handshake sent.'
+handlehandshake() {
+    while read -rd'%' -n 4096 packet ;do
+        [[ "$(getpackettype "${packet}")" == "decryptor" ]] &&  CL_packet_HI "${hdid}"
+        output wtf
+        
+        case "$(getpackettype "${packet}")" in
+            'ID')
+            output a
+            CL_packet_ID "${clientname}" "${clientversion}";;
+
+            'PN')
+            output b
+            handlepacket "${packet}";;
+
+            'FL')
+            output c
+            handlepacket "${packet}"
+            CL_packet_askchaa;;
+
+            'SI')
+            output d
+            handlepacket "${packet}"
+            CL_packet_RC;;
+
+            'SC')
+            output e
+            handlepacket "${packet}"
+            CL_packet_RM;;
+
+            'SM')
+            output f
+            handlepacket "${packet}"
+            CL_packet_RD;;
+            
+            'HP')
+            output g
+            handlepacket "${packet}"
+            CL_packet_RD;;
+                        
+            'DONE')
+            break;;
+            '*')
+            output what;break;;
+        esac
+        
+    done <&3
+    
+
 }
 
 connect() { exec 3<>/dev/tcp/"${server}/${port}"; }
@@ -84,6 +103,7 @@ findagoodcharacterautomagically() {
 	echo "Character found: $i"
 	CL_packet_CC "$i"
 	CL_packet_RD
+output 'Handshake finished.'
 }
 
 handleban() {
