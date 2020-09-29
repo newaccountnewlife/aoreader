@@ -16,71 +16,62 @@ CL_debugpacket() { output '~>'"$(getpackettype "$1")"; }
 
 sendpacket() {
     CL_debugpacket "$1"
-    echo -en "$1" >&3 || die "Oops. Couldn't send Packet."; }
+    echo -n "$1" >&3 || die "Oops. Couldn't send Packet."; }
 
 handlepacket() {
-    # properly matching case is not consistent across bash versions afaik.
     packet1="$1"
-    SV_debugpacket "${packet1}"
+    # properly matching case is not consistent across bash versions afaik.
+    SV_debugpacket "$1"
     
     SV_packets=( 'BD' 'CharsCheck' 'CHECK' 'CT' 
-                 'decryptor' 'DONE' 'FL' 'KB' 'KK' 'MS' 
-                 'PN' 'PV' 'SC' 'SM' 'XX' )
+                 'DONE' 'FL' 'KB' 'KK' 'MS' 
+                 'PN' 'PV' 'SC' 'SM' 'XX' 'LE'
+               )
 		   
 	for packet_type in "${SV_packets[@]}";do
-        grep -qE '^'"${packet_type}"'' <<<"${packet1}" && SV_packet_"${packet_type}" "${packet1}" && return 0
+        [[ "$(getpackettype "${packet1}")" == "${packet_type}" ]] && SV_packet_"${packet_type}" "${packet1}"
 	done
-	    
-    return 1
 }
 
 
 
 getpackettype() {
-	awk -F'#' '{print $1}' <<<"$@"
+	awk -F'#' '{print $1}'  <<<"$1"
 }
 
 handlehandshake() {
-    while read -rd'%' -n 4096 packet ;do
-        [[ "$(getpackettype "${packet}")" == "decryptor" ]] &&  CL_packet_HI "${hdid}"
-        output wtf
+    while read -rd'%' -n 4096 packet2 ;do
+        [[ "$(getpackettype "${packet2}")" == "decryptor" ]] &&  CL_packet_HI "${hdid}" && CL_packet_ID "${clientname}" "${clientversion}"
         
-        case "$(getpackettype "${packet}")" in
-            'ID')
-            output a
-            CL_packet_ID "${clientname}" "${clientversion}";;
+        case "$(getpackettype "${packet2}")" in
 
             'PN')
-            output b
-            handlepacket "${packet}";;
+            handlepacket "${packet2}";;
 
             'FL')
-            output c
-            handlepacket "${packet}"
+            handlepacket "${packet2}"
             CL_packet_askchaa;;
 
             'SI')
-            output d
-            handlepacket "${packet}"
+            handlepacket "${packet2}"
             CL_packet_RC;;
 
             'SC')
-            output e
-            handlepacket "${packet}"
+            handlepacket "${packet2}"
             CL_packet_RM;;
 
             'SM')
-            output f
-            handlepacket "${packet}"
+            handlepacket "${packet2}"
             CL_packet_RD;;
             
             'HP')
-            output g
-            handlepacket "${packet}"
+            handlepacket "${packet2}"
             CL_packet_RD;;
                         
             'DONE')
+            handlepacket "${packet2}"
             break;;
+
             '*')
             output what;break;;
         esac
@@ -102,7 +93,6 @@ findagoodcharacterautomagically() {
 	((i=i-2))
 	echo "Character found: $i"
 	CL_packet_CC "$i"
-	CL_packet_RD
 output 'Handshake finished.'
 }
 

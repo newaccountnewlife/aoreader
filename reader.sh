@@ -87,16 +87,14 @@
 # 
 # etc. pp.
 
-# trap "CL_packet_NULL" INT
 
 while :;do
     bbb
     handlehandshake
-    output what\ how
     while read -rd'%' -n 4096 packet ;do
-        output "${packet}" "$(getpackettype "${packet}")"
-        handlepacket
-        periodically && CL_packet_CH
+#         output "${packet}" "$(getpackettype "${packet}")"
+        handlepacket "${packet}"
+        periodically && CL_packet_CH # && CL_packet_MC 'Pursuit (DS).opus' 'your fucking mother'
     done <&3
     handledisconnect
 done

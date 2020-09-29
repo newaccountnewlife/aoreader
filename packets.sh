@@ -15,6 +15,8 @@ SV_packet_SC() { output 'Characters available: '"$(tr '#' ', ' <<<"$1" | tr -d '
 
 SV_packet_SM() { output 'Available Music: '"$(tr '#' ', ' <<<"$1")"; }
 
+SV_packet_LE() { output 'Available Evidence: '"$(tr '#' ', ' <<<"$1")"; }
+
 SV_packet_DONE() { output 'Server Done.'; isdone="1"; }
 
 SV_packet_CHECK() { output 'The connection is still alive.'; }
@@ -42,8 +44,7 @@ SV_packet_XX() { return; }
 # outgoing
 
 # CC: <int charid>
-CL_packet_CC() { sendpacket 'CC#0#'"$1"'#abcdef#%'
-	             charid="$1"; }
+CL_packet_CC() { sendpacket 'CC#0#'"$1"'#abcdef#%'; }
 
 # CH, RC, RD, askchaa: no args
 CL_packet_CH() { sendpacket 'CH#'"${charid}"'#%'; }
@@ -61,6 +62,8 @@ CL_packet_HI() { sendpacket 'HI#'"$1"'#%'; }
 # ID: <string clientname> <string version>
 CL_packet_ID() { sendpacket 'ID#'"$1"'#'"$2"'#%'; }
 
+# MC: <string trackname> <string showname>
+CL_packet_MC() { sendpacket 'MC#'"$1"'#'"$2"'#%'; }
 # ZZ: <string reason>
 CL_packet_ZZ() { sendpacket 'ZZ#'"$1"'#%'; }
 
